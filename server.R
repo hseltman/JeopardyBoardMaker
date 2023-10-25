@@ -39,6 +39,16 @@ function(input, output, session) {
     }
   })
   
+  observeEvent(input$gameStage, {
+    if (input$gameStage == "Final Jeopardy") {
+      hide("sixQAs")
+      show("oneQA")
+    } else {
+      hide("oneQA")
+      show("sixQAs")
+    }
+  })
+  
   # observeEvent(input$newName, {
   #   cat("observe event newName\n")
   # })
