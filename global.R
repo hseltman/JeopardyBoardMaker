@@ -3,13 +3,13 @@
 # For file input
 wd = getwd()
 tLoc = regexpr("/Desktop/", wd)
-if (tLoc == -1 || nchar(wd) == tLoc+7) {
+#if (tLoc == -1 || nchar(wd) == tLoc+7) {
   roots = wd
   names(roots) = wd
-} else {
-  roots = c(wd, substring(wd, 1, tLoc+8))
-  names(roots) = c(wd, "Desktop")
-}
+#} else {
+#  roots = c(wd, substring(wd, 1, tLoc+8))
+#  names(roots) = c(wd, "Desktop")
+#}
 rm(tLoc)
 
 # File input is plain text as follows:

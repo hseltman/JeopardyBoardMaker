@@ -21,24 +21,27 @@ function(input, output, session) {
   # End the app
   observeEvent(input$quitApp, {stopApp()})
   
-  # File selection
-  #shinyFileChoose(input, "oldFile", roots = roots, session=session, filetype="txt")
+  # Old file selection
+  shinyFileChoose(input, "oldFile", roots=roots, session=session, filetype="txt")
+  observeEvent(input$oldFile, {
+    gameName(basename(parseFilePaths(roots, input$oldFile)$datapath))
+  })
   
   gameName = reactiveVal(value="None")
   observeEvent(input$newOrOld, {
     gameName(NULL)
     if (input$newOrOld == "New Game") {
-      disable("oldFile")
-      enable("newName")
+      hide("oldFile")
+      show("newName")
     } else {
-      disable("newName")
-      enable("oldFile")
+      hide("newName")
+      show("oldFile")
     }
   })
   
-  observeEvent(input$newName, {
-    cat("observe event newName\n")
-  })
+  # observeEvent(input$newName, {
+  #   cat("observe event newName\n")
+  # })
   
   #gameName = reactive({
   #  req(input$inputFile)
