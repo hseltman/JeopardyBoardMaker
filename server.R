@@ -16,22 +16,38 @@ library(shinyjs)
 
 # Define server logic required to draw a histogram
 function(input, output, session) {
-  observe({cat("gameName =", gameName(), "\n")})
-  observe({cat("input$jbsA1() =", class(input$jbsA1), "\n")})
-  
+  #observe({cat("gameName =", gameName(), "\n")})
+
   # End the app
   observeEvent(input$quitApp, {stopApp()})
   
   # File selection
-  shinyFileChoose(input, "inputFile", roots = roots, session=session, filetype="txt")
+  #shinyFileChoose(input, "oldFile", roots = roots, session=session, filetype="txt")
   
-  gameName = reactive({
-    req(input$inputFile)
-    parseFilePaths(roots, input$inputFile)$datapath
+  gameName = reactiveVal(value="None")
+  observeEvent(input$newOrOld, {
+    gameName(NULL)
+    if (input$newOrOld == "New Game") {
+      disable("oldFile")
+      enable("newName")
+    } else {
+      disable("newName")
+      enable("oldFile")
+    }
   })
   
+  observeEvent(input$newName, {
+    cat("observe event newName\n")
+  })
+  
+  #gameName = reactive({
+  #  req(input$inputFile)
+  #  if (input$newOrOld == "New")
+  #  parseFilePaths(roots, input$inputFile)$datapath
+  #})
+  
   # When input file name changes, read in new game board data
-  gameData <- reactive({
+  loadData <- function() {
     req(gameName())
     fName = gameName()
     
@@ -153,7 +169,7 @@ function(input, output, session) {
     }
     shinyalert("Bad input", "Unhandled exception", type="error")
     return(NULL)
-  }) # end definition of gameData() reactive function
+  } # end definition of gameData() reactive function
   
   # Add headers to Jeopardy board
   # lapply(1:6, function(column) {

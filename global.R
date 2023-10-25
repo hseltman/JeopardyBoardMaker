@@ -32,3 +32,17 @@ sbPattern = c(rep(c(FALSE, rep(TRUE, 5)), 6*2), FALSE, TRUE)
 
 # pattern of Categories vs Answer|Question pairs in the file input
 catAQPairPattern = c(rep(c(1, 5), 12), 1, 1)
+
+
+# Empty game data
+emptyGameData = list(
+  sjCategories = paste("Jeopardy Category", 1:6),
+  djCategories = paste("Double Jeopardy Category", 1:6),
+  fjCategory = "Final Jeopardy Category",
+  sjAnswers = matrix("", 5, 6),
+  sjQuestions = matrix("", 5, 6),
+  djAnswers = matrix("", 5, 6),
+  djQuestions = matrix("", 5, 6),
+  fjAnswer = "",
+  fjQuestion = ""
+)
