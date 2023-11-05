@@ -16,10 +16,11 @@ library(shinyjs)
 
 # Define server logic required to draw a histogram
 function(input, output, session) {
-  observe({cat("gameStage =", input$gameStage, "\n")})
-  observe({cat("categoryNum =", input$categoryNum, "\n")})
+  #observe({cat("gameStage =", input$gameStage, "\n")})
+  #observe({cat("categoryNum =", input$categoryNum, "\n")})
   
   # Startup code
+  categoryNum <- reactiveVal(1)
   gameStage <- reactiveVal("Jeopardy")  # Previous value of input$gameStage
   gameData <- reactiveValues(sjCategories = emptyGameData$sjCategories,
                              djCategories = emptyGameData$djCategories,
@@ -121,6 +122,52 @@ function(input, output, session) {
     }  # end filling in new data
   },  # end "handlerExpr"
   ignoreInit=TRUE)  # end observeEvent(input$gameStage) 
+  
+  # Handle change of game stage
+  observeEvent(input$categoryNum, {
+    ocn = categoryNum()  # old category number
+    ncn = as.numeric(input$categoryNum)
+    # Store visible data based on prior game state and category number
+    if (gameStage() == "Jeopardy") {
+      gameData$sjCategories[ocn] <- input$categoryName
+      gameData$sjAnswers[, ocn] <- c(input$jA1, input$jA2, input$jA3,
+                                        input$jA4, input$jA5)
+      gameData$sjQuestions[, ocn] <- c(input$jQ1, input$jQ2, input$jQ3,
+                                          input$jQ4, input$jQ5)
+      updateTextInput(session, "categoryName", value=gameData$sjCategories[ncn])
+      updateTextInput(session, "jA1", value=gameData$sjAnswers[1, ncn])
+      updateTextInput(session, "jA2", value=gameData$sjAnswers[2, ncn])
+      updateTextInput(session, "jA3", value=gameData$sjAnswers[3, ncn])
+      updateTextInput(session, "jA4", value=gameData$sjAnswers[4, ncn])
+      updateTextInput(session, "jA5", value=gameData$sjAnswers[5, ncn])
+      updateTextInput(session, "jQ1", value=gameData$sjQuestions[1, ncn])
+      updateTextInput(session, "jQ2", value=gameData$sjQuestions[2, ncn])
+      updateTextInput(session, "jQ3", value=gameData$sjQuestions[3, ncn])
+      updateTextInput(session, "jQ4", value=gameData$sjQuestions[4, ncn])
+      updateTextInput(session, "jQ5", value=gameData$sjQuestions[5, ncn])
+    } else if (gameStage() == "Double Jeopardy"){
+      gameData$djCategories[ocn] <- input$categoryName
+      gameData$djAnswers[, ocn] <- c(input$jA1, input$jA2, input$jA3,
+                                     input$jA4, input$jA5)
+      gameData$djQuestions[, ocn] <- c(input$jQ1, input$jQ2, input$jQ3,
+                                       input$jQ4, input$jQ5)
+      updateTextInput(session, "categoryName", value=gameData$djCategories[ncn])
+      updateTextInput(session, "jA1", value=gameData$djAnswers[1, ncn])
+      updateTextInput(session, "jA2", value=gameData$djAnswers[2, ncn])
+      updateTextInput(session, "jA3", value=gameData$djAnswers[3, ncn])
+      updateTextInput(session, "jA4", value=gameData$djAnswers[4, ncn])
+      updateTextInput(session, "jA5", value=gameData$djAnswers[5, ncn])
+      updateTextInput(session, "jQ1", value=gameData$djQuestions[1, ncn])
+      updateTextInput(session, "jQ2", value=gameData$djQuestions[2, ncn])
+      updateTextInput(session, "jQ3", value=gameData$djQuestions[3, ncn])
+      updateTextInput(session, "jQ4", value=gameData$djQuestions[4, ncn])
+      updateTextInput(session, "jQ5", value=gameData$djQuestions[5, ncn])
+    }
+    categoryNum(ncn)  # update old category number
+  }, # end of change of category number
+  ignoreInit=TRUE)  # end observeEvent(input$categoryNum)
+  
+  
   
   # observeEvent(input$newName, {
   #   cat("observe event newName\n")
