@@ -31,7 +31,10 @@ function(input, output, session) {
                              djQuestions = emptyGameData$djQuestions,
                              fjAnswer = emptyGameData$fjAnswer,
                              fjQuestion = emptyGameData$jfQuestion) 
-  
+  output$sjComplete <- renderText(0)
+  output$djComplete <- renderText(0)
+  output$fjComplete <- renderText(0)
+
   # End the app
   observeEvent(input$quitApp, {stopApp()})
   gameName = reactiveVal(value="")
