@@ -59,41 +59,17 @@ function(input, output, session) {
     catNum = as.numeric(input$categoryNum)
     # Store visible data based on prior game state
     if (gameStage() == "Jeopardy") {
-      temp <- gameData$sjCategories
-      temp[catNum] <- input$categoryName
-      gameData$sjCategories <- temp
-      temp <- gameData$sjAnswers
-      temp[1, catNum] <- input$jA1
-      temp[2, catNum] <- input$jA2
-      temp[3, catNum] <- input$jA3
-      temp[4, catNum] <- input$jA4
-      temp[5, catNum] <- input$jA5
-      gameData$sjAnswers <- temp
-      temp <- gameData$sjQuestions
-      temp[1, catNum] <- input$jQ1
-      temp[2, catNum] <- input$jQ2
-      temp[3, catNum] <- input$jQ3
-      temp[4, catNum] <- input$jQ4
-      temp[5, catNum] <- input$jQ5
-      gameData$sjQuestions <- temp
+      gameData$sjCategories[catNum] <- input$categoryName
+      gameData$sjAnswers[, catNum] <- c(input$jA1, input$jA2, input$jA3,
+                                        input$jA4, input$jA5)
+      gameData$sjQuestions[, catNum] <- c(input$jQ1, input$jQ2, input$jQ3,
+                                          input$jQ4, input$jQ5)
     } else if (gameStage() == "Double Jeopardy") {
-      temp <- gameData$djCategories
-      temp[catNum] <- input$categoryName
-      gameData$djCategories <- temp
-      temp <- gameData$sjAnswers
-      temp[1, catNum] <- input$jA1
-      temp[2, catNum] <- input$jA2
-      temp[3, catNum] <- input$jA3
-      temp[4, catNum] <- input$jA4
-      temp[5, catNum] <- input$jA5
-      gameData$djAnswers <- temp
-      temp <- gameData$sjQuestions
-      temp[1, catNum] <- input$jQ1
-      temp[2, catNum] <- input$jQ2
-      temp[3, catNum] <- input$jQ3
-      temp[4, catNum] <- input$jQ4
-      temp[5, catNum] <- input$jQ5
-      gameData$djQuestions <- temp
+      gameData$djCategories[catNum] <- input$categoryName
+      gameData$djAnswers[, catNum] <- c(input$jA1, input$jA2, input$jA3,
+                                        input$jA4, input$jA5)
+      gameData$djQuestions[, catNum] <- c(input$jQ1, input$jQ2, input$jQ3,
+                                          input$jQ4, input$jQ5)
     } else {  # gameStage() == "Final Jeopardy"
       gameData$fjCategory <- input$categoryName
       gameData$fjAnswer <- input$fjAnswer
@@ -134,7 +110,7 @@ function(input, output, session) {
       updateTextInput(session, "jA1", value=gameData$djAnswers[1, catNum])
       updateTextInput(session, "jA2", value=gameData$djAnswers[2, catNum])
       updateTextInput(session, "jA3", value=gameData$djAnswers[3, catNum])
-      updateTextInput(session, "jA3", value=gameData$djAnswers[4, catNum])
+      updateTextInput(session, "jA4", value=gameData$djAnswers[4, catNum])
       updateTextInput(session, "jA5", value=gameData$djAnswers[5, catNum])
       updateTextInput(session, "jQ1", value=gameData$djQuestions[1, catNum])
       updateTextInput(session, "jQ2", value=gameData$djQuestions[2, catNum])
