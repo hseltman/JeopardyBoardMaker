@@ -16,10 +16,14 @@ library(shinyjs)
 
 # Define server logic required to draw a histogram
 function(input, output, session) {
-  #observe({cat("gameName =", gameName(), "\n")})
-
+  observe({cat("gameStage =", input$gameStage, "\n")})
+  observe({cat("categoryNum =", input$categoryNum, "\n")})
+  
+  # Startup code
+  
   # End the app
   observeEvent(input$quitApp, {stopApp()})
+  gameName = reactiveVal(value="")
   
   # Old file selection
   shinyFileChoose(input, "oldFile", roots=roots, session=session, filetype="txt")
@@ -27,7 +31,7 @@ function(input, output, session) {
     gameName(basename(parseFilePaths(roots, input$oldFile)$datapath))
   })
   
-  gameName = reactiveVal(value="None")
+  # Handle change from New to Old game or vice versa
   observeEvent(input$newOrOld, {
     gameName(NULL)
     if (input$newOrOld == "New Game") {
@@ -39,15 +43,86 @@ function(input, output, session) {
     }
   })
   
+  
+  # Handle change of game stage
   observeEvent(input$gameStage, {
+    catNum = as.numeric(input$categoryNum)
+    # Store visible data based on prior game state
+    if (gameStage == "Jeopardy") {
+      gameData$sjCategories[catNum] <- input$categoryName
+      gameData$sjAnswers[1, catNum] <- input$jA1
+      gameData$sjAnswers[2, catNum] <- input$jA2
+      gameData$sjAnswers[3, catNum] <- input$jA3
+      gameData$sjAnswers[4, catNum] <- input$jA4
+      gameData$sjAnswers[5, catNum] <- input$jA5
+      gameData$sjQuestions[1, catNum] <- input$jQ1
+      gameData$sjQuestions[2, catNum] <- input$jQ2
+      gameData$sjQuestions[3, catNum] <- input$jQ3
+      gameData$sjQuestions[4, catNum] <- input$jQ4
+      gameData$sjQuestions[5, catNum] <- input$jQ5
+    } else if (gameStage == "Double Jeopardy") {
+      gameData$djCategories[catNum] <- input$categoryName
+      gameData$djAnswers[1, catNum] <- input$jA1
+      gameData$djAnswers[2, catNum] <- input$jA2
+      gameData$djAnswers[3, catNum] <- input$jA3
+      gameData$djAnswers[4, catNum] <- input$jA4
+      gameData$djAnswers[5, catNum] <- input$jA5
+      gameData$djQuestions[1, catNum] <- input$jQ1
+      gameData$djQuestions[2, catNum] <- input$jQ2
+      gameData$djQuestions[3, catNum] <- input$jQ3
+      gameData$djQuestions[4, catNum] <- input$jQ4
+      gameData$djQuestions[5, catNum] <- input$jQ5
+    } else {  # gameStage == "Final Jeopardy"
+      gameData$fjCategory <- input$categoryName
+      gameData$fjAnswer <- input$fjAnswer
+      gameData$fjQuestion <- input$fjQuestion
+    }  # end storing visible data based on prior game state
+    
+    # Fill in new data
     if (input$gameStage == "Final Jeopardy") {
       hide("sixQAs")
       show("oneQA")
-    } else {
-      hide("oneQA")
-      show("sixQAs")
-    }
-  })
+      updateTextInput(session, "categoryName", value=gameData$fjCategory)
+      updateTextInput(session, "fjAnswer", value=gameData$fjAnswer)
+      updateTextInput(session, "fjQuestion", value=gameData$fjQuestion)
+      gameStage = "Final Jeopardy"
+    } else if (input$gameStage == "Jeopardy") {  
+      if (gameStage == "Final Jeopardy") {
+        hide("oneQA")
+        show("sixQAs")
+      }
+      updateTextInput(session, "categoryName", value=gameData$sjCategories[catNum])
+      updateTextInput(session, "jA1", value=gameData$sjAnswers[1, catNum])
+      updateTextInput(session, "jA2", value=gameData$sjAnswers[2, catNum])
+      updateTextInput(session, "jA3", value=gameData$sjAnswers[3, catNum])
+      updateTextInput(session, "jA3", value=gameData$sjAnswers[4, catNum])
+      updateTextInput(session, "jA5", value=gameData$sjAnswers[5, catNum])
+      updateTextInput(session, "jQ1", value=gameData$sjQuestions[1, catNum])
+      updateTextInput(session, "jQ2", value=gameData$sjQuestions[2, catNum])
+      updateTextInput(session, "jQ3", value=gameData$sjQuestions[3, catNum])
+      updateTextInput(session, "jQ4", value=gameData$sjQuestions[4, catNum])
+      updateTextInput(session, "jQ5", value=gameData$sjQuestions[5, catNum])
+      gameStage = "Jeopardy"
+    } else {  # switch to Double Jeopardy
+      if (gameStage == "Final Jeopardy") {
+        hide("oneQA")
+        show("sixQAs")
+      }
+      updateTextInput(session, "categoryName", value=gameData$djCategories[catNum])
+      updateTextInput(session, "jA1", value=gameData$djAnswers[1, catNum])
+      updateTextInput(session, "jA2", value=gameData$djAnswers[2, catNum])
+      updateTextInput(session, "jA3", value=gameData$djAnswers[3, catNum])
+      updateTextInput(session, "jA3", value=gameData$djAnswers[4, catNum])
+      updateTextInput(session, "jA5", value=gameData$djAnswers[5, catNum])
+      updateTextInput(session, "jQ1", value=gameData$djQuestions[1, catNum])
+      updateTextInput(session, "jQ2", value=gameData$djQuestions[2, catNum])
+      updateTextInput(session, "jQ3", value=gameData$djQuestions[3, catNum])
+      updateTextInput(session, "jQ4", value=gameData$djQuestions[4, catNum])
+      updateTextInput(session, "jQ5", value=gameData$djQuestions[5, catNum])
+      gameStage = "Double Jeopardy"
+    }  # end filling in new data
+  },  # end "handlerExpr"
+  ignoreInit=TRUE)  # end observeEvent(input$gameStage) 
   
   # observeEvent(input$newName, {
   #   cat("observe event newName\n")

@@ -33,16 +33,15 @@ ui = fluidPage(
       selectInput("AQSeparator", "Separator between Answer and Question",
                    choices=c("|", "/", "\\", "&"), selected="|", selectize=TRUE), 
       actionButton("Save", "Save Current Jeopardy Board"),
-      actionButton("quitApp", "Quit Jeopardy")
+      actionButton("quitApp", "Quit Jeopardy Board Maker")
     ),  # end sidebarPanel
     
     mainPanel(
       radioButtons("gameStage", "Game stage:", 
                    choices=c("Jeopardy", "Double Jeopardy", "Final Jeopardy"),
                    selected="Jeopardy", inline=TRUE),
-      radioButtons("categoryNum", "Category", choices=1:6, selected="1",
-                   inline=TRUE),
-      textInput("categoryName", "Category Name: "),
+      radioButtons("categoryNum", "Category", choices=1:6, inline=TRUE),
+      textInput("categoryName", "Category Name: ", emptyGameData$sjCategories[1]),
       tags$head(tags$style(type="text/css", "#categoryName {width: 750px}")),
       hidden(tags$div(fluidRow(column(width=6, textInput("fjAnswer", "Answer:")),
                                column(width=6, textInput("fjQuestion", "Question:"))
