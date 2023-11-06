@@ -30,14 +30,20 @@ function(input, output, session) {
                              djAnswers = emptyGameData$djAnswers,
                              djQuestions = emptyGameData$djQuestions,
                              fjAnswer = emptyGameData$fjAnswer,
-                             fjQuestion = emptyGameData$jfQuestion) 
+                             fjQuestion = emptyGameData$jfQuestion)
+  #fjCompleteStatus <- reactiveVal(0)
   output$sjComplete <- renderText(0)
   output$djComplete <- renderText(0)
-  output$fjComplete <- renderText(0)
+  output$fjComplete <- renderText(fjCompleteStatus())
 
   # End the app
   observeEvent(input$quitApp, {stopApp()})
   gameName = reactiveVal(value="")
+  
+  # Update fjCompleteStatus()
+  fjCompleteStatus <- reactive({
+    return(ifelse(input$fjAnswer!="" && input$fjQuestion!="", "Done", "Empty"))
+  })
   
   # Old file selection
   shinyFileChoose(input, "oldFile", roots=roots, session=session, filetype="txt")
