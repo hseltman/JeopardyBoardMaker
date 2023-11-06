@@ -32,18 +32,47 @@ function(input, output, session) {
                              fjAnswer = emptyGameData$fjAnswer,
                              fjQuestion = emptyGameData$jfQuestion)
   #fjCompleteStatus <- reactiveVal(0)
-  output$sjComplete <- renderText(0)
-  output$djComplete <- renderText(0)
+  output$sjComplete <- renderText(sjCompleteStatus())
+  output$djComplete <- renderText(djCompleteStatus())
   output$fjComplete <- renderText(fjCompleteStatus())
 
   # End the app
   observeEvent(input$quitApp, {stopApp()})
   gameName = reactiveVal(value="")
   
+  # Update sjCompleteStatus()
+  sjCompleteStatus <- reactive({
+    # Compute how many categories have complete sets of 5 answers and questions
+    temp <- (gameData$sjAnswers != "") & (gameData$sjQuestions != "")
+    temp <- as.numeric(apply(temp, 2, all))
+    if (input$gameStage == "Jeopardy") {
+      temp2 <- c(input$jA1, input$jQ1, input$jA2, input$jQ2,
+                 input$jA3, input$jQ3, input$jA4, input$jQ4,
+                 input$jA5, input$jQ5, input$jA6, input$jQ6)
+      temp[categoryNum()] <- as.numeric(all(trimws(temp2) != "")) 
+    }
+    return(sum(temp))
+  })
+  
+  # Update djCompleteStatus()
+  djCompleteStatus <- reactive({
+    # Compute how many categories have complete sets of 5 answers and questions
+    temp <- (gameData$djAnswers != "") & (gameData$djQuestions != "")
+    temp <- as.numeric(apply(temp, 2, all))
+    if (input$gameStage == "Double Jeopardy") {
+      temp2 <- c(input$jA1, input$jQ1, input$jA2, input$jQ2,
+                 input$jA3, input$jQ3, input$jA4, input$jQ4,
+                 input$jA5, input$jQ5, input$jA6, input$jQ6)
+      temp[categoryNum()] <- as.numeric(all(trimws(temp2) != "")) 
+    }
+    return(sum(temp))
+  })
+  
   # Update fjCompleteStatus()
   fjCompleteStatus <- reactive({
     return(ifelse(input$fjAnswer!="" && input$fjQuestion!="", "Done", "Empty"))
   })
+  
   
   # Old file selection
   shinyFileChoose(input, "oldFile", roots=roots, session=session, filetype="txt")
